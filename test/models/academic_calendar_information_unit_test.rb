@@ -1,7 +1,6 @@
-require_relative '../lib/academic_calendar_information'
-require_relative '../lib/day_attribute'
-require 'date'
-require 'minitest/autorun'
+require_relative '../test_helper'
+require_relative '../../lib/academic_calendar_information'
+require_relative '../../lib/day_attribute'
 
 class AcademicCalendarInformationTest < Minitest::Test
     def setup

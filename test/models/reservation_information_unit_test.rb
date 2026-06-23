@@ -1,5 +1,5 @@
-require_relative '../lib/reservation_information'
-require 'minitest/autorun'
+require_relative '../test_helper'
+require_relative '../../lib/reservation_information'
 
 class ReservationInformationTest < Minitest::Test
     def setup
@@ -80,7 +80,19 @@ class ReservationInformationTest < Minitest::Test
                 subject: @valid_subject,
                 periods: @valid_periods,
                 user: @valid_user,
-                room_namess: 123
+                room_names: 123
+            )
+        end
+    end
+
+    def test_invalid_room_names_contents
+        assert_raises(ArgumentError) do
+            ReservationInformation.new(
+                date: @valid_date,
+                subject: @valid_subject,
+                periods: @valid_periods,
+                user: @valid_user,
+                room_names: ["Room A", 123]
             )
         end
     end

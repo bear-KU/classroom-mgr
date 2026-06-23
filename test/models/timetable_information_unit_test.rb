@@ -1,5 +1,5 @@
-require_relative '../lib/timetable_information'
-require 'minitest/autorun'
+require_relative '../test_helper'
+require_relative '../../lib/timetable_information'
 
 class TimetableInformationTest < Minitest::Test
     def setup
@@ -104,6 +104,19 @@ class TimetableInformationTest < Minitest::Test
                 periods: @valid_periods,
                 user: @valid_user,
                 room_names: 123
+            )
+        end
+    end
+
+    def test_invalid_room_names_contents
+        assert_raises(ArgumentError) do
+            TimetableInformation.new(
+                subject: @valid_subject,
+                term: @valid_term,
+                day_of_the_week: @valid_day_of_the_week,
+                periods: @valid_periods,
+                user: @valid_user,
+                room_names: ["Room A", 123]
             )
         end
     end

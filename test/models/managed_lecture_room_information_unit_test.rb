@@ -1,5 +1,5 @@
-require_relative '../lib/managed_lecture_room_information'
-require 'minitest/autorun'
+require_relative '../test_helper'
+require_relative '../../lib/managed_lecture_room_information'
 
 class ManagedLectureRoomInformationTest < Minitest::Test
     def setup
