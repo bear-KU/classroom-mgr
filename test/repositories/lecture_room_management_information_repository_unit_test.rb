@@ -35,6 +35,17 @@ class LectureRoomManagementInformationRepositoryTest < Minitest::Test
         assert_equal [@info_a], repository.find_all
     end
 
+    def test_find_all_returns_copy
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [@info_a]
+        )
+
+        result = repository.find_all
+        result << @info_b
+
+        assert_equal [@info_a], repository.find_all
+    end
+
     def test_add_remove_and_replace_all
         repository = LectureRoomManagementInformationRepository.new
         repository.add(@info_a)
@@ -59,6 +70,39 @@ class LectureRoomManagementInformationRepositoryTest < Minitest::Test
         )
     end
 
+    def test_find_by_date_and_lecture_room_name_with_multiple_matches
+        another_info = LectureRoomManagementInformation.new(
+            date: Date.new(2024, 6, 1),
+            day_of_the_week: :sat,
+            term: 1,
+            periods: [:p4],
+            room_name: 'Room A',
+            subject: 'Chemistry',
+            user: 'Alice',
+            comment: 'Third booking'
+        )
+
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [@info_a, @info_b, another_info]
+        )
+
+        assert_equal [@info_a, another_info], repository.find_by_date_and_lecture_room_name(
+            date: Date.new(2024, 6, 1),
+            lecture_room_name: 'Room A'
+        )
+    end
+
+    def test_find_by_date_and_lecture_room_name_with_no_matches
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [@info_a, @info_b]
+        )
+
+        assert_equal [], repository.find_by_date_and_lecture_room_name(
+            date: Date.new(2024, 6, 2),
+            lecture_room_name: 'Room C'
+        )
+    end
+
     def test_invalid_find_by_date_and_lecture_room_name_arguments
         repository = LectureRoomManagementInformationRepository.new
 
@@ -75,5 +119,19 @@ class LectureRoomManagementInformationRepositoryTest < Minitest::Test
         assert_raises(ArgumentError) do
             LectureRoomManagementInformationRepository.new(lecture_room_management_informations: 'not an array')
         end
+    end
+
+    def test_invalid_add_and_remove_arguments
+        repository = LectureRoomManagementInformationRepository.new
+
+        assert_raises(ArgumentError) { repository.add('not lecture room management info') }
+        assert_raises(ArgumentError) { repository.remove('not lecture room management info') }
+    end
+
+    def test_replace_all_with_empty_array
+        repository = LectureRoomManagementInformationRepository.new(lecture_room_management_informations: [@info_a])
+        repository.replace_all([])
+
+        assert_equal [], repository.find_all
     end
 end

@@ -23,6 +23,25 @@ class AcademicCalendarInformationTest < Minitest::Test
         assert_equal @valid_day_attribute, info.day_attribute
     end
 
+    def test_valid_boundary_term_values
+        zero_term = AcademicCalendarInformation.new(
+            date: @valid_date,
+            day_of_the_week: @valid_day_of_the_week,
+            term: 0,
+            day_attribute: @valid_day_attribute
+        )
+
+        negative_term = AcademicCalendarInformation.new(
+            date: @valid_date,
+            day_of_the_week: @valid_day_of_the_week,
+            term: -1,
+            day_attribute: @valid_day_attribute
+        )
+
+        assert_equal 0, zero_term.term
+        assert_equal(-1, negative_term.term)
+    end
+
     def test_invalid_date
         assert_raises(ArgumentError) do
             AcademicCalendarInformation.new(
@@ -63,6 +82,17 @@ class AcademicCalendarInformationTest < Minitest::Test
                 day_of_the_week: @valid_day_of_the_week,
                 term: @valid_term,
                 day_attribute: "not a day attribute"
+            )
+        end
+    end
+
+    def test_invalid_day_attribute_nil
+        assert_raises(ArgumentError) do
+            AcademicCalendarInformation.new(
+                date: @valid_date,
+                day_of_the_week: @valid_day_of_the_week,
+                term: @valid_term,
+                day_attribute: nil
             )
         end
     end

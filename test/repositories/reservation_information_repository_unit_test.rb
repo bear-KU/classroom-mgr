@@ -29,6 +29,17 @@ class ReservationInformationRepositoryTest < Minitest::Test
         assert_equal [@reservation_a], repository.find_all
     end
 
+    def test_find_all_returns_copy
+        repository = ReservationInformationRepository.new(
+            reservation_informations: [@reservation_a]
+        )
+
+        result = repository.find_all
+        result << @reservation_b
+
+        assert_equal [@reservation_a], repository.find_all
+    end
+
     def test_add_remove_and_replace_all
         repository = ReservationInformationRepository.new
         repository.add(@reservation_a)
@@ -46,5 +57,19 @@ class ReservationInformationRepositoryTest < Minitest::Test
         assert_raises(ArgumentError) do
             ReservationInformationRepository.new(reservation_informations: 'not an array')
         end
+    end
+
+    def test_invalid_add_and_remove_arguments
+        repository = ReservationInformationRepository.new
+
+        assert_raises(ArgumentError) { repository.add('not reservation info') }
+        assert_raises(ArgumentError) { repository.remove('not reservation info') }
+    end
+
+    def test_replace_all_with_empty_array
+        repository = ReservationInformationRepository.new(reservation_informations: [@reservation_a])
+        repository.replace_all([])
+
+        assert_equal [], repository.find_all
     end
 end

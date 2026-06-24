@@ -34,6 +34,22 @@ class LectureRoomManagementInformationTest < Minitest::Test
         assert_equal @valid_comment, @valid_info.comment
     end
 
+    def test_valid_empty_periods_and_empty_comment
+        info = LectureRoomManagementInformation.new(
+            date: @valid_date,
+            day_of_the_week: @valid_day_of_the_week,
+            term: @valid_term,
+            periods: [],
+            room_name: @valid_room_name,
+            subject: @valid_subject,
+            user: @valid_user,
+            comment: ''
+        )
+
+        assert_equal [], info.periods
+        assert_equal '', info.comment
+    end
+
     def test_invalid_date
         assert_raises(ArgumentError) do
             LectureRoomManagementInformation.new(
@@ -182,6 +198,21 @@ class LectureRoomManagementInformationTest < Minitest::Test
         )
 
         assert_equal [], @valid_info.conflicting_periods_with(lecture_room_management_information: other)
+    end
+
+    def test_conflicting_periods_with_identical_periods
+        other = LectureRoomManagementInformation.new(
+            date: @valid_date,
+            day_of_the_week: @valid_day_of_the_week,
+            term: @valid_term,
+            periods: @valid_periods.dup,
+            room_name: "Room B",
+            subject: @valid_subject,
+            user: @valid_user,
+            comment: @valid_comment
+        )
+
+        assert_equal @valid_periods, @valid_info.conflicting_periods_with(lecture_room_management_information: other)
     end
 
     def test_conflicting_periods_with_invalid_argument

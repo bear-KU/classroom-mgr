@@ -11,6 +11,11 @@ class ManagedLectureRoomInformationTest < Minitest::Test
         assert_equal @valid_room_name, info.room_name
     end
 
+    def test_valid_empty_room_name
+        info = ManagedLectureRoomInformation.new(room_name: '')
+        assert_equal '', info.room_name
+    end
+
     def test_invalid_room_name
         assert_raises(ArgumentError) do
             ManagedLectureRoomInformation.new(room_name: 123)

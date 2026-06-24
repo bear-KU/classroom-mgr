@@ -27,7 +27,7 @@ class LectureRoomManagementInformation < Data.define(:date, :day_of_the_week, :t
             raise ArgumentError, "comment must be a String"
         end
 
-        super(date: date, day_of_the_week: day_of_the_week, term: term, periods: periods, room_name: room_name, subject: subject, user: user, comment: comment) 
+        super(date: date, day_of_the_week: day_of_the_week, term: term, periods: periods.dup, room_name: room_name, subject: subject, user: user, comment: comment) 
     end
 
     def conflicting_periods_with(lecture_room_management_information:)

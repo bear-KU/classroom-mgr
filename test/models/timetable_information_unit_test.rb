@@ -30,6 +30,23 @@ class TimetableInformationTest < Minitest::Test
         assert_equal @valid_room_names, info.room_names
     end
 
+    def test_valid_empty_periods_and_room_names
+        info = TimetableInformation.new(
+            subject: '',
+            term: 0,
+            day_of_the_week: @valid_day_of_the_week,
+            periods: [],
+            user: '',
+            room_names: []
+        )
+
+        assert_equal '', info.subject
+        assert_equal 0, info.term
+        assert_equal [], info.periods
+        assert_equal '', info.user
+        assert_equal [], info.room_names
+    end
+
     def test_invalid_subject
         assert_raises(ArgumentError) do
             TimetableInformation.new(
@@ -119,6 +136,26 @@ class TimetableInformationTest < Minitest::Test
                 room_names: ["Room A", 123]
             )
         end
+    end
+
+    def test_array_arguments_are_copied
+        periods = [:p1, :p2]
+        room_names = ['Room A']
+
+        info = TimetableInformation.new(
+            subject: @valid_subject,
+            term: @valid_term,
+            day_of_the_week: @valid_day_of_the_week,
+            periods: periods,
+            user: @valid_user,
+            room_names: room_names
+        )
+
+        periods << :p3
+        room_names << 'Room B'
+
+        assert_equal [:p1, :p2], info.periods
+        assert_equal ['Room A'], info.room_names
     end
 end
 

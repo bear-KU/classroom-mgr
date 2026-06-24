@@ -48,6 +48,19 @@ class DayAttributeTest < Minitest::Test
         ]
     end
 
+    def test_valid_empty_comments_array
+        attr = DayAttribute.new(
+            day_of_the_week_changes: nil,
+            is_makeup_class: false,
+            is_exam_period: false,
+            is_public_holiday: false,
+            is_holiday: false,
+            comments: []
+        )
+
+        assert_equal [], attr.comments
+    end
+
     def test_invalid_day_of_the_week_changes
         assert_raises(ArgumentError) do
             DayAttribute.new(
@@ -137,6 +150,19 @@ class DayAttributeTest < Minitest::Test
                 comments: ["ok", 123]
             )
         end
+    end
+
+    def test_valid_nil_comments
+        attr = DayAttribute.new(
+            day_of_the_week_changes: nil,
+            is_makeup_class: false,
+            is_exam_period: false,
+            is_public_holiday: false,
+            is_holiday: false,
+            comments: nil
+        )
+
+        assert_nil attr.comments
     end
 end
 
