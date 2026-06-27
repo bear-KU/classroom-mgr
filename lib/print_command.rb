@@ -7,6 +7,12 @@ class PrintCommand
     unless lecture_room_management_information_repository.is_a?(LectureRoomManagementInformationRepository)
       raise ArgumentError, 'lecture_room_management_information_repository must be a LectureRoomManagementInformationRepository.'
     end
+    unless finding_date.is_a?(String) || finding_date.nil?
+      raise ArgumentError, 'finding_date must be a String.'
+    end
+    unless finding_subject.is_a?(String) || finding_subject.nil?
+      raise ArgumentError, 'finding_subject must be a String.'
+    end
 
     @lecture_room_management_information_repository = lecture_room_management_information_repository
     @finding_date = finding_date
@@ -29,11 +35,19 @@ class PrintCommand
 
     print_all(lecture_room_management_informations)
 
-    return false, false, 0 # ToCheck: CommandResultの返却処理はこの形式で返却してOK？
+    return false, true, 0 # ToCheck: CommandResultの返却処理はこの形式で返却してOK？
   end
 
   def print_all(lecture_room_management_informations)
-    output = LectureRoomManagementInformationFormatter.to_formatted_string(lecture_room_management_informations)
+    sorted_lecture_room_management_informations =
+      lecture_room_management_informations.sort_by do |lecture_room_management_information|
+        [
+          lecture_room_management_information.date,
+          PeriodMaster::ORDER[lecture_room_management_information.periods.first]
+        ]
+      end
+
+    output = LectureRoomManagementInformationFormatter.to_formatted_string(sorted_lecture_room_management_informations)
     puts output
   end
 
