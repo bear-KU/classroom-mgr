@@ -43,7 +43,7 @@ class AcademicCalendarInformationTest < Minitest::Test
     end
 
     def test_invalid_date
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             AcademicCalendarInformation.new(
                 date: "not a date",
                 day_of_the_week: @valid_day_of_the_week,
@@ -54,7 +54,7 @@ class AcademicCalendarInformationTest < Minitest::Test
     end
 
     def test_invalid_day_of_the_week
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             AcademicCalendarInformation.new(
                 date: @valid_date,
                 day_of_the_week: "Monday",
@@ -65,7 +65,7 @@ class AcademicCalendarInformationTest < Minitest::Test
     end
 
     def test_invalid_term
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             AcademicCalendarInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -76,7 +76,7 @@ class AcademicCalendarInformationTest < Minitest::Test
     end
 
     def test_invalid_day_attribute
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             AcademicCalendarInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -87,7 +87,7 @@ class AcademicCalendarInformationTest < Minitest::Test
     end
 
     def test_invalid_day_attribute_nil
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             AcademicCalendarInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,

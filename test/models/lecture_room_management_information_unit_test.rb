@@ -51,7 +51,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_date
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: "2024-06-01",
                 day_of_the_week: @valid_day_of_the_week,
@@ -66,7 +66,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_day_of_the_week
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: @valid_date,
                 day_of_the_week: "Monday",
@@ -81,7 +81,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_term
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -96,7 +96,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_periods
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -111,7 +111,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_room_name
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -126,7 +126,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_subject
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -141,7 +141,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_user
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -156,7 +156,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_invalid_comment
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformation.new(
                 date: @valid_date,
                 day_of_the_week: @valid_day_of_the_week,
@@ -246,7 +246,7 @@ class LectureRoomManagementInformationTest < Minitest::Test
     end
 
     def test_conflicting_periods_with_invalid_argument
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             @valid_info.conflicting_periods_with(lecture_room_management_information: "not info")
         end
     end
