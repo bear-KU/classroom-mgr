@@ -5,7 +5,7 @@ class ManagedLectureRoomInformationRepository
         @managed_lecture_room_informations = []
 
         unless managed_lecture_room_informations.is_a?(Array)
-            raise ArgumentError, "managed_lecture_room_informations must be an Array"
+            raise TypeError, "managed_lecture_room_informations must be an Array"
         end
 
         replace_all(managed_lecture_room_informations)
@@ -14,7 +14,7 @@ class ManagedLectureRoomInformationRepository
     def replace_all(managed_lecture_room_informations)
         managed_lecture_room_informations.each do |info|
             unless info.is_a?(ManagedLectureRoomInformation)
-                raise ArgumentError, "All elements must be instances of ManagedLectureRoomInformation"
+                raise TypeError, "All elements must be instances of ManagedLectureRoomInformation"
             end
         end
 

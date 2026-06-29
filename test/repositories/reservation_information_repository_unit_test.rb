@@ -48,7 +48,7 @@ class ReservationInformationRepositoryTest < Minitest::Test
     end
 
     def test_invalid_initialization_argument
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ReservationInformationRepository.new(reservation_informations: 'not an array')
         end
     end

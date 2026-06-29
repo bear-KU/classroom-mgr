@@ -114,13 +114,13 @@ class AcademicCalendarInformationRepositoryTest < Minitest::Test
     def test_invalid_find_by_day_of_the_week
         repository = AcademicCalendarInformationRepository.new
 
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             repository.find_by_day_of_the_week('mon')
         end
     end
 
     def test_invalid_initialization_argument
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             AcademicCalendarInformationRepository.new(academic_calendar_informations: 'not an array')
         end
     end

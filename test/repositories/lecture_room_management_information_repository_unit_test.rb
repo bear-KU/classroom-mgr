@@ -106,17 +106,17 @@ class LectureRoomManagementInformationRepositoryTest < Minitest::Test
     def test_invalid_find_by_date_and_lecture_room_name_arguments
         repository = LectureRoomManagementInformationRepository.new
 
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             repository.find_by_date_and_lecture_room_name(date: '2024-06-01', lecture_room_name: 'Room A')
         end
 
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             repository.find_by_date_and_lecture_room_name(date: Date.new(2024, 6, 1), lecture_room_name: 123)
         end
     end
 
     def test_invalid_initialization_argument
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             LectureRoomManagementInformationRepository.new(lecture_room_management_informations: 'not an array')
         end
     end
@@ -124,8 +124,8 @@ class LectureRoomManagementInformationRepositoryTest < Minitest::Test
     def test_invalid_add_and_remove_arguments
         repository = LectureRoomManagementInformationRepository.new
 
-        assert_raises(ArgumentError) { repository.add('not lecture room management info') }
-        assert_raises(ArgumentError) { repository.remove('not lecture room management info') }
+        assert_raises(TypeError) { repository.add('not lecture room management info') }
+        assert_raises(TypeError) { repository.remove('not lecture room management info') }
     end
 
     def test_replace_all_with_empty_array

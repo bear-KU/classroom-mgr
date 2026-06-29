@@ -50,7 +50,7 @@ class TimetableInformationRepositoryTest < Minitest::Test
     end
 
     def test_invalid_initialization_argument
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformationRepository.new(timetable_informations: 'not an array')
         end
     end

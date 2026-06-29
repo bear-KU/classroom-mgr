@@ -62,7 +62,7 @@ class DayAttributeTest < Minitest::Test
     end
 
     def test_invalid_day_of_the_week_changes
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             DayAttribute.new(
                 day_of_the_week_changes: "Monday",
                 is_makeup_class: @valid_is_makeup_class,
@@ -75,7 +75,7 @@ class DayAttributeTest < Minitest::Test
     end
 
     def test_invalid_is_makeup_class
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             DayAttribute.new(
                 day_of_the_week_changes: @valid_day_of_the_week_changes,
                 is_makeup_class: "false",
@@ -88,7 +88,7 @@ class DayAttributeTest < Minitest::Test
     end
 
     def test_invalid_is_exam_period
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             DayAttribute.new(
                 day_of_the_week_changes: @valid_day_of_the_week_changes,
                 is_makeup_class: @valid_is_makeup_class,
@@ -101,7 +101,7 @@ class DayAttributeTest < Minitest::Test
     end
 
     def test_invalid_is_public_holiday
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             DayAttribute.new(
                 day_of_the_week_changes: @valid_day_of_the_week_changes,
                 is_makeup_class: @valid_is_makeup_class,
@@ -114,7 +114,7 @@ class DayAttributeTest < Minitest::Test
     end
 
     def test_invalid_is_holiday
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             DayAttribute.new(
                 day_of_the_week_changes: @valid_day_of_the_week_changes,
                 is_makeup_class: @valid_is_makeup_class,
@@ -127,7 +127,7 @@ class DayAttributeTest < Minitest::Test
     end
 
     def test_invalid_comments
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             DayAttribute.new(
                 day_of_the_week_changes: @valid_day_of_the_week_changes,
                 is_makeup_class: @valid_is_makeup_class,
@@ -140,7 +140,7 @@ class DayAttributeTest < Minitest::Test
     end
 
     def test_invalid_comments_contents
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             DayAttribute.new(
                 day_of_the_week_changes: @valid_day_of_the_week_changes,
                 is_makeup_class: @valid_is_makeup_class,

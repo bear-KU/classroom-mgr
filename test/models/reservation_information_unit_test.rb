@@ -41,7 +41,7 @@ class ReservationInformationTest < Minitest::Test
     end
 
     def test_invalid_date
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ReservationInformation.new(
                 date: "2024-06-01",
                 subject: @valid_subject,
@@ -53,7 +53,7 @@ class ReservationInformationTest < Minitest::Test
     end
 
     def test_invalid_subject
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ReservationInformation.new(
                 date: @valid_date,
                 subject: 123,
@@ -65,7 +65,7 @@ class ReservationInformationTest < Minitest::Test
     end
 
     def test_invalid_periods
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ReservationInformation.new(
                 date: @valid_date,
                 subject: @valid_subject,
@@ -77,7 +77,7 @@ class ReservationInformationTest < Minitest::Test
     end
 
     def test_invalid_user
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ReservationInformation.new(
                 date: @valid_date,
                 subject: @valid_subject,
@@ -89,7 +89,7 @@ class ReservationInformationTest < Minitest::Test
     end
 
     def test_invalid_room_names
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ReservationInformation.new(
                 date: @valid_date,
                 subject: @valid_subject,
@@ -101,7 +101,7 @@ class ReservationInformationTest < Minitest::Test
     end
 
     def test_invalid_room_names_contents
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ReservationInformation.new(
                 date: @valid_date,
                 subject: @valid_subject,
