@@ -3,23 +3,21 @@ require_relative '../../lib/interactive_menu'
 
 class InteractiveMenuTest < Minitest::Test
   class FakePrompt
-    attr_reader :yes_messages, :select_messages, :choices
+    attr_accessor :new_arguments, :new_keywords
+    attr_reader :select_messages, :select_keywords, :choices
 
-    def initialize(yes_result: true, select_result: nil)
-      @yes_result = yes_result
+    def initialize(select_result: nil)
       @select_result = select_result
-      @yes_messages = []
+      @new_arguments = []
+      @new_keywords = {}
       @select_messages = []
+      @select_keywords = []
       @choices = []
     end
 
-    def yes?(message)
-      @yes_messages << message
-      @yes_result
-    end
-
-    def select(message)
+    def select(message, **kwargs)
       @select_messages << message
+      @select_keywords << kwargs
 
       menu = FakeMenu.new
       yield menu
@@ -45,7 +43,11 @@ class InteractiveMenuTest < Minitest::Test
 
   def with_prompt(prompt)
     original_new = TTY::Prompt.method(:new)
-    TTY::Prompt.define_singleton_method(:new) { prompt }
+    TTY::Prompt.define_singleton_method(:new) do |*args, **kwargs|
+      prompt.new_arguments = args
+      prompt.new_keywords = kwargs
+      prompt
+    end
 
     yield
   ensure
@@ -63,10 +65,11 @@ class InteractiveMenuTest < Minitest::Test
     end
 
     assert_instance_of InteractiveMenu, menu
+    assert_equal({ symbols: { marker: '→' }, enable_color: false }, prompt.new_keywords)
   end
 
   def test_ask_yes_or_no_returns_true_for_yes
-    prompt = FakePrompt.new(yes_result: true)
+    prompt = FakePrompt.new(select_result: true)
     menu = nil
 
     with_prompt(prompt) do
@@ -76,11 +79,13 @@ class InteractiveMenuTest < Minitest::Test
     result = menu.ask_yes_or_no('Proceed?')
 
     assert_equal true, result
-    assert_equal ['Proceed?'], prompt.yes_messages
+    assert_equal ['Proceed?'], prompt.select_messages
+    assert_equal [{ show_help: :never }], prompt.select_keywords
+    assert_equal [['yes', true], ['no', false]], prompt.choices
   end
 
   def test_ask_yes_or_no_returns_false_for_no
-    prompt = FakePrompt.new(yes_result: false)
+    prompt = FakePrompt.new(select_result: false)
     menu = nil
 
     with_prompt(prompt) do
@@ -117,6 +122,7 @@ class InteractiveMenuTest < Minitest::Test
 
     assert_equal 1, result
     assert_equal ['Choose one'], prompt.select_messages
+    assert_equal [{ show_help: :never }], prompt.select_keywords
     assert_equal [['Alpha', 0], ['Beta', 1], ['Gamma', 2]], prompt.choices
   end
 

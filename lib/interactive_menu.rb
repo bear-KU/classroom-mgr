@@ -2,7 +2,7 @@ require 'tty-prompt'
 
 class InteractiveMenu
   def initialize
-    @prompt = TTY::Prompt.new
+    @prompt = TTY::Prompt.new(symbols: { marker: '→' }, enable_color: false)
   end
 
   def ask_yes_or_no(message)
@@ -10,7 +10,10 @@ class InteractiveMenu
       raise TypeError, 'message must be a String.'
     end
 
-    @prompt.yes?(message)
+    @prompt.select(message, show_help: :never) do |menu|
+      menu.choice('yes', true)
+      menu.choice('no', false)
+    end
   end
 
   def select_from_list(message, options)
@@ -22,7 +25,7 @@ class InteractiveMenu
       raise TypeError, 'options must be an Array of Strings.'
     end
 
-    @prompt.select(message) do |menu|
+    @prompt.select(message, show_help: :never) do |menu|
       options.each_with_index do |option, index|
         menu.choice(option, index)
       end
