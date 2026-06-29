@@ -5,7 +5,7 @@ class TimetableInformationRepository
         @timetable_informations = []
 
         unless timetable_informations.is_a?(Array)
-            raise ArgumentError, "timetable_informations must be an Array"
+            raise TypeError, "timetable_informations must be an Array"
         end
 
         replace_all(timetable_informations)
@@ -14,7 +14,7 @@ class TimetableInformationRepository
     def replace_all(timetable_informations)
         timetable_informations.each do |info|
             unless info.is_a?(TimetableInformation)
-                raise ArgumentError, "All elements must be instances of TimetableInformation"
+                raise TypeError, "All elements must be instances of TimetableInformation"
             end
         end
 

@@ -17,7 +17,7 @@ class ManagedLectureRoomInformationTest < Minitest::Test
     end
 
     def test_invalid_room_name
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             ManagedLectureRoomInformation.new(room_name: 123)
         end
     end

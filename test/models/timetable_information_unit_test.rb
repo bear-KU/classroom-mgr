@@ -48,7 +48,7 @@ class TimetableInformationTest < Minitest::Test
     end
 
     def test_invalid_subject
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformation.new(
                 subject: 123,
                 term: @valid_term,
@@ -61,7 +61,7 @@ class TimetableInformationTest < Minitest::Test
     end
 
     def test_invalid_term
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformation.new(
                 subject: @valid_subject,
                 term: "First Term",
@@ -74,7 +74,7 @@ class TimetableInformationTest < Minitest::Test
     end
 
     def test_invalid_day_of_the_week
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformation.new(
                 subject: @valid_subject,
                 term: @valid_term,
@@ -87,7 +87,7 @@ class TimetableInformationTest < Minitest::Test
     end
 
     def test_invalid_periods
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformation.new(
                 subject: @valid_subject,
                 term: @valid_term,
@@ -100,7 +100,7 @@ class TimetableInformationTest < Minitest::Test
     end
 
     def test_invalid_user
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformation.new(
                 subject: @valid_subject,
                 term: @valid_term,
@@ -113,7 +113,7 @@ class TimetableInformationTest < Minitest::Test
     end
 
     def test_invalid_room_names
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformation.new(
                 subject: @valid_subject,
                 term: @valid_term,
@@ -126,7 +126,7 @@ class TimetableInformationTest < Minitest::Test
     end
 
     def test_invalid_room_names_contents
-        assert_raises(ArgumentError) do
+        assert_raises(TypeError) do
             TimetableInformation.new(
                 subject: @valid_subject,
                 term: @valid_term,
