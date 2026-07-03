@@ -112,6 +112,40 @@ class InteractiveConflictResolutionServiceTest < Minitest::Test
         assert_raises(TypeError) { service.resolve_conflict('not conflict') }
     end
 
+    def test_resolve_conflict_rejects_negative_selected_index
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [@information, @conflicting_information]
+        )
+        menu = FakeInteractiveMenu.new(-1)
+        service = InteractiveConflictResolutionService.new(repository, menu)
+        conflict = Conflict.new(
+            room_name: 'Room A',
+            date: Date.new(2024, 6, 1),
+            period: [:p2],
+            conflicting_informations: [@information, @conflicting_information]
+        )
+
+        assert_raises(RangeError) { capture_io { service.resolve_conflict(conflict) } }
+        assert_equal [@information, @conflicting_information], repository.find_all
+    end
+
+    def test_resolve_conflict_rejects_out_of_range_selected_index
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [@information, @conflicting_information]
+        )
+        menu = FakeInteractiveMenu.new(2)
+        service = InteractiveConflictResolutionService.new(repository, menu)
+        conflict = Conflict.new(
+            room_name: 'Room A',
+            date: Date.new(2024, 6, 1),
+            period: [:p2],
+            conflicting_informations: [@information, @conflicting_information]
+        )
+
+        assert_raises(RangeError) { capture_io { service.resolve_conflict(conflict) } }
+        assert_equal [@information, @conflicting_information], repository.find_all
+    end
+
     def test_resolve_conflict_displays_lunch_period
         information = lecture_room_management_information(
             room_name: 'Room A',

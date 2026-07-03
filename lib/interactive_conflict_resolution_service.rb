@@ -78,6 +78,7 @@ class InteractiveConflictResolutionService
             options,
             header: format_columns(['科目名・予約名', '担当者・予約者', '備考'], column_widths)
         )
+        validate_selected_index(selected_index, information_groups.length)
         prioritized_informations = information_groups[selected_index]
         puts "科目名・予約名「#{prioritized_informations.first.subject}」が選択されました．"
         puts
@@ -141,6 +142,12 @@ class InteractiveConflictResolutionService
 
             @lecture_room_management_information_repository.remove(stored_information)
         end
+    end
+
+    def validate_selected_index(selected_index, option_count)
+        return if selected_index.is_a?(Integer) && selected_index.between?(0, option_count - 1)
+
+        raise RangeError, "selected index must be between 0 and #{option_count - 1}"
     end
 
     def column_widths_for(information_groups)
