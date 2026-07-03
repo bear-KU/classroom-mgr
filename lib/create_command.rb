@@ -66,8 +66,8 @@ class CreateCommand
     lecture_room_management_informations += lecture_room_management_information_factory.create_from_reservation_informations
     @lecture_room_management_information_repository.replace_all(lecture_room_management_informations)
 
-    # interactive_conflict_resolution_service = InteractiveConflictResolutionService(@interactive_menu)
-    # interactive_conflict_resolution_service.execute
+    interactive_conflict_resolution_service = InteractiveConflictResolutionService(@interactive_menu)
+    interactive_conflict_resolution_service.execute
 
     return CommandResult.new(false, true , 0)
   end
