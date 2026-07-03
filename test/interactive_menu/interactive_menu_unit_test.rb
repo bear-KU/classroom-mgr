@@ -161,6 +161,7 @@ class InteractiveMenuTest < Minitest::Test
       menu.select_from_list('Choose one', ['Alpha'], header: 'Name')
     end.first
 
+    assert_equal ["Choose one\n  Name"], prompt.select_messages
     assert_includes output, 'Choose one'
     assert_includes output, '  Name'
     assert_includes output, '→ Alpha'

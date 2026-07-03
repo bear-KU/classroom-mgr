@@ -16,6 +16,34 @@ class IntegrationFakeInteractiveMenu < InteractiveMenu
 end
 
 class InteractiveConflictResolutionServiceIntegrationTest < Minitest::Test
+    def test_execute_does_nothing_when_no_conflicts
+        information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:p1],
+            subject: 'Mathematics',
+            user: 'John Doe',
+            comment: 'First booking'
+        )
+        other_information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:p2],
+            subject: 'Physics',
+            user: 'Jane Doe',
+            comment: 'Second booking'
+        )
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [information, other_information]
+        )
+        menu = IntegrationFakeInteractiveMenu.new([0])
+        service = InteractiveConflictResolutionService.new(repository, menu, managed_repository(['Room A']))
+
+        output = capture_io { service.execute }.first
+
+        assert_equal [information, other_information], repository.find_all
+        assert_equal 0, menu.options.length
+        assert_equal '', output
+    end
+
     def test_execute_keeps_selected_subject_and_removes_related_information_for_other_subject
         information = lecture_room_management_information(
             room_name: 'Room A',
@@ -254,6 +282,53 @@ class InteractiveConflictResolutionServiceIntegrationTest < Minitest::Test
         assert_includes output, '講義室の利用に2件の競合が見つかりました．'
         assert_includes output, '--- 競合 1/2 ---'
         refute_includes output, '--- 競合 2/2 ---'
+        assert_includes output, '2件の競合を解消しました．'
+    end
+
+    def test_execute_removes_related_conflict_when_selected_subject_deletes_shared_conflicting_information
+        reservation_a = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1],
+            subject: 'Reservation A',
+            user: 'Alice',
+            comment: 'First period booking'
+        )
+        reservation_b = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p2],
+            subject: 'Reservation B',
+            user: 'Bob',
+            comment: 'Second period booking'
+        )
+        reservation_c = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1, :p2],
+            subject: 'Reservation C',
+            user: 'Carol',
+            comment: 'First-to-second period booking'
+        )
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [
+                reservation_a,
+                reservation_b,
+                reservation_c
+            ]
+        )
+        menu = IntegrationFakeInteractiveMenu.new([0])
+        service = InteractiveConflictResolutionService.new(
+            repository,
+            menu,
+            managed_repository(['Room 303'])
+        )
+
+        output = capture_io { service.execute }.first
+
+        assert_equal [reservation_a, reservation_b], repository.find_all
+        assert_equal 1, menu.options.length
+        assert_includes output, '講義室の利用に2件の競合が見つかりました．'
+        assert_includes output, '--- 競合 1/2 ---'
+        refute_includes output, '--- 競合 2/2 ---'
+        assert_includes output, '科目名・予約名「Reservation A」が選択されました．'
         assert_includes output, '2件の競合を解消しました．'
     end
 

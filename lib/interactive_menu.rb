@@ -29,7 +29,8 @@ class InteractiveMenu
       raise TypeError, 'header must be a String.'
     end
 
-    selected_index = @prompt.select(message, show_help: :never, quiet: true) do |menu|
+    prompt_message = header.nil? ? message : "#{message}\n  #{header}"
+    selected_index = @prompt.select(prompt_message, show_help: :never, quiet: true) do |menu|
       options.each_with_index do |option, index|
         menu.choice(option, index)
       end

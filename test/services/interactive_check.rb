@@ -148,6 +148,55 @@ repository = LectureRoomManagementInformationRepository.new(
       subject: 'Same Subject Seminar',
       user: 'Ellen',
       comment: 'Same subject is not a conflict'
+    ),
+    build_information(
+      room_name: 'Room 707',
+      periods: [:p4, :lunch, :p5],
+      subject: 'Lunch Range Class',
+      user: 'Frank',
+      comment: 'Displayed as 4-5限'
+    ),
+    build_information(
+      room_name: 'Room 707',
+      periods: [:p4, :lunch, :p5],
+      subject: 'Lunch Range Reservation',
+      user: 'Grace',
+      comment: 'Displayed as 4-5限'
+    ),
+    build_information(
+      room_name: 'Room 808',
+      periods: [:p1, :p3],
+      subject: 'Nonconsecutive Class',
+      user: 'Henry',
+      comment: 'Displayed separately'
+    ),
+    build_information(
+      room_name: 'Room 808',
+      periods: [:p1, :p3],
+      subject: 'Nonconsecutive Reservation',
+      user: 'Ivy',
+      comment: 'Displayed separately'
+    ),
+    build_information(
+      room_name: 'Room 909',
+      periods: [:p1],
+      subject: 'Reservation A',
+      user: 'Alice',
+      comment: 'First period booking'
+    ),
+    build_information(
+      room_name: 'Room 909',
+      periods: [:p2],
+      subject: 'Reservation B',
+      user: 'Bob',
+      comment: 'Second period booking'
+    ),
+    build_information(
+      room_name: 'Room 909',
+      periods: [:p1, :p2],
+      subject: 'Reservation C',
+      user: 'Carol',
+      comment: 'First-to-second period booking'
     )
   ]
 )
@@ -157,7 +206,10 @@ managed_repository = ManagedLectureRoomInformationRepository.new(
     ManagedLectureRoomInformation.new(room_name: '第1講義室'),
     ManagedLectureRoomInformation.new(room_name: 'Room 303'),
     ManagedLectureRoomInformation.new(room_name: 'Room 404'),
-    ManagedLectureRoomInformation.new(room_name: 'Room 606')
+    ManagedLectureRoomInformation.new(room_name: 'Room 606'),
+    ManagedLectureRoomInformation.new(room_name: 'Room 707'),
+    ManagedLectureRoomInformation.new(room_name: 'Room 808'),
+    ManagedLectureRoomInformation.new(room_name: 'Room 909')
   ]
 )
 

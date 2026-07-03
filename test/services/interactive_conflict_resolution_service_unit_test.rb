@@ -112,6 +112,106 @@ class InteractiveConflictResolutionServiceTest < Minitest::Test
         assert_raises(TypeError) { service.resolve_conflict('not conflict') }
     end
 
+    def test_resolve_conflict_displays_lunch_period
+        information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:lunch],
+            subject: 'Mathematics',
+            user: 'John Doe',
+            comment: 'Lunch booking'
+        )
+        conflicting_information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:lunch],
+            subject: 'Physics',
+            user: 'Jane Doe',
+            comment: 'Lunch reservation'
+        )
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [information, conflicting_information]
+        )
+        menu = FakeInteractiveMenu.new(0)
+        service = InteractiveConflictResolutionService.new(repository, menu)
+        conflict = Conflict.new(
+            room_name: 'Room A',
+            date: Date.new(2024, 6, 1),
+            period: [:lunch],
+            conflicting_informations: [information, conflicting_information]
+        )
+
+        output = capture_io { service.resolve_conflict(conflict) }.first
+
+        assert_includes output, '昼休み'
+        refute_includes output, '0限'
+        refute_includes output, '昼休み限'
+    end
+
+    def test_resolve_conflict_displays_lunch_between_fourth_and_fifth_periods_as_range
+        information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:p4, :lunch, :p5],
+            subject: 'Mathematics',
+            user: 'John Doe',
+            comment: 'First booking'
+        )
+        conflicting_information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:p4, :lunch, :p5],
+            subject: 'Physics',
+            user: 'Jane Doe',
+            comment: 'Second booking'
+        )
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [information, conflicting_information]
+        )
+        menu = FakeInteractiveMenu.new(0)
+        service = InteractiveConflictResolutionService.new(repository, menu)
+        conflict = Conflict.new(
+            room_name: 'Room A',
+            date: Date.new(2024, 6, 1),
+            period: [:p4, :lunch, :p5],
+            conflicting_informations: [information, conflicting_information]
+        )
+
+        output = capture_io { service.resolve_conflict(conflict) }.first
+
+        assert_includes output, '4-5限'
+        refute_includes output, '4限，昼休み，5限'
+    end
+
+    def test_resolve_conflict_displays_nonconsecutive_periods_separately
+        information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:p1, :p3],
+            subject: 'Mathematics',
+            user: 'John Doe',
+            comment: 'First booking'
+        )
+        conflicting_information = lecture_room_management_information(
+            room_name: 'Room A',
+            periods: [:p1, :p3],
+            subject: 'Physics',
+            user: 'Jane Doe',
+            comment: 'Second booking'
+        )
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [information, conflicting_information]
+        )
+        menu = FakeInteractiveMenu.new(0)
+        service = InteractiveConflictResolutionService.new(repository, menu)
+        conflict = Conflict.new(
+            room_name: 'Room A',
+            date: Date.new(2024, 6, 1),
+            period: [:p1, :p3],
+            conflicting_informations: [information, conflicting_information]
+        )
+
+        output = capture_io { service.resolve_conflict(conflict) }.first
+
+        assert_includes output, '1限，3限'
+        refute_includes output, '1-3限'
+    end
+
     private
 
     def lecture_room_management_information(room_name:, periods:, subject:, user:, comment:, date: Date.new(2024, 6, 1))

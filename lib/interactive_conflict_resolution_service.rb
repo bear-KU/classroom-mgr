@@ -3,6 +3,7 @@ require_relative 'conflict_detector'
 require_relative 'interactive_menu'
 require_relative 'lecture_room_management_information_repository'
 require_relative 'managed_lecture_room_information_repository'
+require_relative 'period_master'
 
 class InteractiveConflictResolutionService
     WEEKDAY_LABELS = %w[日 月 火 水 木 金 土]
@@ -102,10 +103,29 @@ class InteractiveConflictResolutionService
     end
 
     def period_label_for(periods)
-        period_numbers = periods.map { |period| period.to_s.delete_prefix('p').to_i }
-        return "#{period_numbers.first}限" if period_numbers.length == 1
+        sorted_periods = periods.sort_by { |period| PeriodMaster::ORDER.fetch(period) }
+        return period_text_for(sorted_periods.first) if sorted_periods.length == 1
 
-        "#{period_numbers.first}-#{period_numbers.last}限"
+        regular_periods = sorted_periods.reject { |period| period == :lunch }
+        if regular_periods.length >= 2 && consecutive_regular_periods?(regular_periods)
+            first_period = PeriodMaster::SYMBOL_TO_STRING.fetch(regular_periods.first)
+            last_period = PeriodMaster::SYMBOL_TO_STRING.fetch(regular_periods.last)
+            return "#{first_period}-#{last_period}限"
+        end
+
+        sorted_periods.map { |period| period_text_for(period) }.join('，')
+    end
+
+    def period_text_for(period)
+        period_text = PeriodMaster::SYMBOL_TO_STRING.fetch(period)
+        return period_text if period == :lunch
+
+        "#{period_text}限"
+    end
+
+    def consecutive_regular_periods?(periods)
+        period_numbers = periods.map { |period| PeriodMaster::SYMBOL_TO_STRING.fetch(period).to_i }
+        period_numbers.each_cons(2).all? { |previous_period, current_period| current_period == previous_period + 1 }
     end
 
     def managed_lecture_room_informations

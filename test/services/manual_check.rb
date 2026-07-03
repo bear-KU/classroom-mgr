@@ -277,3 +277,47 @@ run_case(
     )
   ]
 )
+
+run_case(
+  title: '5. Lunch period display is folded into fourth-to-fifth period range',
+  managed_room_names: ['Room A'],
+  selected_indexes: [0],
+  informations: [
+    build_information(
+      room_name: 'Room A',
+      periods: [:p4, :lunch, :p5],
+      subject: 'Mathematics',
+      user: 'John Doe',
+      comment: 'Includes lunch period'
+    ),
+    build_information(
+      room_name: 'Room A',
+      periods: [:p4, :lunch, :p5],
+      subject: 'Physics',
+      user: 'Jane Doe',
+      comment: 'Includes lunch period'
+    )
+  ]
+)
+
+run_case(
+  title: '6. Nonconsecutive periods are displayed separately',
+  managed_room_names: ['Room A'],
+  selected_indexes: [0],
+  informations: [
+    build_information(
+      room_name: 'Room A',
+      periods: [:p1, :p3],
+      subject: 'Mathematics',
+      user: 'John Doe',
+      comment: 'Nonconsecutive periods'
+    ),
+    build_information(
+      room_name: 'Room A',
+      periods: [:p1, :p3],
+      subject: 'Physics',
+      user: 'Jane Doe',
+      comment: 'Nonconsecutive periods'
+    )
+  ]
+)
