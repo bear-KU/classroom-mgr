@@ -1,3 +1,5 @@
+require_relative 'interactive_conflict_resolution_service'
+
 class CreateCommand
   def initialize(
     lecture_room_management_information_repository,
@@ -66,7 +68,12 @@ class CreateCommand
     lecture_room_management_informations += lecture_room_management_information_factory.create_from_reservation_informations
     @lecture_room_management_information_repository.replace_all(lecture_room_management_informations)
 
-    interactive_conflict_resolution_service = InteractiveConflictResolutionService(@interactive_menu)
+    interactive_conflict_resolution_service =
+      InteractiveConflictResolutionService.new(
+        @lecture_room_management_information_repository,
+        @interactive_menu,
+        @managed_lecture_room_information_repository
+      )
     interactive_conflict_resolution_service.execute
 
     return CommandResult.new(false, true , 0)
