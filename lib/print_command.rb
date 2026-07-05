@@ -1,4 +1,4 @@
-class PrintCommand
+class PrintCommand < Command
   def initialize(
     lecture_room_management_information_repository,
     finding_date,
