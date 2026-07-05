@@ -18,8 +18,8 @@ class LectureRoomManagementInformationFactory
     unless managed_lecture_room_informations.is_a?(Array)
       raise TypeError, 'managed_lecture_room_informations must be a Array.'
     end
-    unless term.is_a?(Integer)
-      raise TypeError, 'term must be a Integer.'
+    unless term.nil? || term.is_a?(Integer)
+      raise TypeError, 'term must be nil or a Integer.'
     end
 
     @academic_calendar_informations = academic_calendar_informations
@@ -95,8 +95,12 @@ class LectureRoomManagementInformationFactory
         academic_calendar_information.date == reservation_information.date
       end
     
-    if filtered_academic_calendar_informations.length != 1
-      raise '該当するAcademicCalendarInformationが1つもないか，複数あります．'
+    if filtered_academic_calendar_informations.empty?
+      return nil
+    end
+
+    if filtered_academic_calendar_informations.length > 1
+      raise '該当するAcademicCalendarInformationが複数あります．'
     end
 
     filtered_academic_calendar_information = filtered_academic_calendar_informations.first
