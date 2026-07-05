@@ -11,6 +11,7 @@ require_relative "interactive_menu"
 require_relative "excel_data_exporter"
 
 class Application
+    # 初期化メソッド
     def initialize
         @lecture_room_management_information_repository = LectureRoomManagementInformationRepository.new
         @academic_calendar_information_repository = AcademicCalendarInformationRepository.new
@@ -30,33 +31,35 @@ class Application
         )
     end
 
-    # システムのメインループを開始する
+    # システムのメインループを開始
     def start_system_loop
         loop do
             input = wait_input
             parsed_input = InputParser.parse(input)
 
             if parsed_input.is_a?(Integer)
-                @error_handler.print_error(parsed_input) 
+                ErrorHandler.print_error(parsed_input)
                 next
             end 
 
+            # コマンド生成
             command = @command_factory.create(
                 parsed_input.command_name, 
                 parsed_input.arguments,
                 parsed_input.options
             )
-            command_result = command.execute # コマンドを実行
+            command_result = command.execute # コマンド実行
 
-            # コマンドの実行結果を確認し，失敗している場合はエラー番号を表示する
+            # コマンドの実行結果を確認し，失敗している場合はエラー番号を表示
             unless command_result.is_succeed
-                @error_handler.print_error(command_result.error_number)
+                ErrorHandler.print_error(command_result.error_number)
             end
 
             stop_system if command_result.exit_flag # exit_flagが立っていたら終了
         end
     end
 
+    # 標準入力からの入力を待機
     def wait_input
         print "> "
 
@@ -67,8 +70,8 @@ class Application
         input.chomp # 改行コードを削除
     end
 
+    # システムの終了
     def stop_system
-        puts "システムが終了しました．"
         exit
     end
 end
