@@ -2,7 +2,7 @@ require_relative 'command'
 require_relative 'lecture_room_management_information_factory'
 require_relative 'interactive_conflict_resolution_service'
 
-class CreateCommand
+class CreateCommand < Command
   def initialize(
     lecture_room_management_information_repository,
     academic_calendar_information_repository,
