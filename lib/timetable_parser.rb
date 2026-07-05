@@ -1,4 +1,5 @@
 require 'rubyXL'
+require_relative 'period_master'
 
 class TimetableParser
   CODE = 0
@@ -84,7 +85,7 @@ day_of_week = day_table[target_row[WEEK].value.to_s]
       raise TypeError, 'end_period must be a Integer'
     end
     
-    ordered_periods = PeriodMaster::PERIOD_SYMBOLS
+    ordered_periods = PeriodMaster::SEQUENCE
 
     start_index = ordered_periods.index("p#{start_period}".to_sym)
     end_index   = ordered_periods.index("p#{end_period}".to_sym)

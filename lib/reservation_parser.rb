@@ -1,4 +1,5 @@
 require 'rubyXL'
+require_relative 'period_master'
 
 class ReservationParser
   DATE = 0
@@ -69,7 +70,7 @@ class ReservationParser
       raise TypeError, 'end_period must be a Integer.'
     end
 
-    ordered_periods = PeriodMaster::PERIOD_SYMBOLS
+    ordered_periods = PeriodMaster::SEQUENCE
 
     start_index = ordered_periods.index("p#{start_period}".to_sym)
     end_index   = ordered_periods.index("p#{end_period}".to_sym)
