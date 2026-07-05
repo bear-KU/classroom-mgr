@@ -1,3 +1,7 @@
+require_relative "command"
+require_relative 'lecture_room_management_information_formatter'
+require_relative 'period_master'
+
 class PrintCommand < Command
   def initialize(
     lecture_room_management_information_repository,
