@@ -1,3 +1,4 @@
+require_relative "command"
 require_relative "command_result"
 require_relative "error_handler"
 require_relative "academic_calendar_information_repository"
@@ -5,8 +6,9 @@ require_relative "interactive_conflict_resolution_service"
 require_relative "lecture_room_management_information_factory"
 require_relative "reservation_information_repository"
 require_relative "timetable_information_repository"
+require_relative "error_handler"
 
-class CreateCommand
+class CreateCommand < Command
   def initialize(
     lecture_room_management_information_repository,
     academic_calendar_information_repository,
