@@ -1,8 +1,12 @@
-require_relative 'command'
-require_relative 'lecture_room_management_information_factory'
-require_relative 'interactive_conflict_resolution_service'
+require_relative "command_result"
+require_relative "error_handler"
+require_relative "academic_calendar_information_repository"
+require_relative "interactive_conflict_resolution_service"
+require_relative "lecture_room_management_information_factory"
+require_relative "reservation_information_repository"
+require_relative "timetable_information_repository"
 
-class CreateCommand < Command
+class CreateCommand
   def initialize(
     lecture_room_management_information_repository,
     academic_calendar_information_repository,
@@ -77,6 +81,8 @@ class CreateCommand < Command
         @managed_lecture_room_information_repository
       )
     interactive_conflict_resolution_service.execute
+
+    puts "講義室管理情報の作成が完了しました．"
 
     return CommandResult.new(false, true , 0)
   end
