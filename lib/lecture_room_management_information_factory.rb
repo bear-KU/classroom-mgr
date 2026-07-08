@@ -18,8 +18,8 @@ class LectureRoomManagementInformationFactory
     unless managed_lecture_room_informations.is_a?(Array)
       raise TypeError, 'managed_lecture_room_informations must be a Array.'
     end
-    unless term.nil? || term.is_a?(Integer)
-      raise TypeError, 'term must be nil or a Integer.'
+    unless (term.is_a?(Integer) && 1 <= term && term <= 4) || term.nil?
+      raise TypeError, 'term must be nil or a Integer (1 ~ 4).'
     end
 
     @academic_calendar_informations = academic_calendar_informations
@@ -32,7 +32,16 @@ class LectureRoomManagementInformationFactory
   def create_from_timetable_informations
     lecture_room_management_informations = []
     
-    @timetable_informations.each do |timetable_information|
+    target_timetable_informations =
+      if @term.nil?
+        @timetable_informations
+      else
+        @timetable_informations.select do |timetable_information|
+          timetable_information.term == @term
+        end
+      end
+
+    target_timetable_informations.each do |timetable_information|
       lecture_room_management_informations +=
         create_from_timetable_information(timetable_information)
     end
@@ -44,10 +53,16 @@ class LectureRoomManagementInformationFactory
     lecture_room_management_informations = []
 
     @reservation_informations.each do |reservation_information|
-      if (lecture_room_management_informations_of_reservation_information = create_from_reservation_information(reservation_information)) != nil
-        lecture_room_management_informations +=
-          lecture_room_management_informations_of_reservation_information
+      informations = create_from_reservation_information(reservation_information)
+
+      next if informations.nil?
+
+      if @term != nil
+        informations = informations.select do |info|
+          info.term == @term
+        end
       end
+      lecture_room_management_informations += informations
     end
 
     return lecture_room_management_informations

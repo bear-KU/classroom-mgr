@@ -42,7 +42,8 @@ class SelectCommand < Command
     "一般B33",
     "一般B33室",
     "コモンズ",
-    "工大"
+    "工大",
+    "共同研究室"
   ].freeze
 
   def initialize(managed_lecture_room_information_repository, interactive_menu)

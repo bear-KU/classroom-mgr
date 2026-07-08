@@ -119,6 +119,7 @@ class CommandFactory
       WriteCommand.new(
         @lecture_room_management_information_repository,
         @academic_calendar_information_repository,
+        @managed_lecture_room_information_repository,
         @excel_data_exporter,
         arguments[0].to_s
       )
