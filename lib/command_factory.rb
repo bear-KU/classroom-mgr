@@ -98,7 +98,11 @@ class CommandFactory
         arguments[0].to_s
       )
     when "select"
-      SelectCommand.new(@managed_lecture_room_information_repository, @interactive_menu)
+      SelectCommand.new(
+        @managed_lecture_room_information_repository,
+        @lecture_room_management_information_repository,
+        @interactive_menu
+      )
     when "create"
       CreateCommand.new(
         @lecture_room_management_information_repository,
