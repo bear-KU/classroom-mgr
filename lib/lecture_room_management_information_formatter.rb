@@ -49,16 +49,14 @@ class LectureRoomManagementInformationFormatter
       info = grouped_info[:info]
       # 時限に関する処理
       sorted_periods = grouped_info[:periods]
-      
-      groups = []
-      current_group = []
+
+      groups = [] # 時限グループを格納する配列
+      current_group = [] # 現在判定中の時限グループを格納する配列
+      lunch_between_periods = false # 昼休みを跨いでいるかどうかを判定するフラグ
 
       sorted_periods.each do |period|
         if period == :lunch
-          if current_group.any?
-            groups.append(current_group)
-            current_group = []
-          end
+          lunch_between_periods = current_group.any?
           next
         end
 
@@ -71,13 +69,15 @@ class LectureRoomManagementInformationFormatter
 
         previous_number = PeriodMaster::SYMBOL_TO_STRING[previous_period].to_i
         current_number = PeriodMaster::SYMBOL_TO_STRING[period].to_i
+        crosses_lunch_break = previous_period == :p4 && period == :p5
 
-        if current_number == previous_number + 1
+        if current_number == previous_number + 1 && (!crosses_lunch_break || lunch_between_periods)
           current_group.append(period)
         else
           groups.append(current_group)
           current_group = [period]
         end
+        lunch_between_periods = false
       end
 
       if current_group.any?
