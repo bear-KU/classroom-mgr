@@ -82,7 +82,7 @@ class LectureRoomManagementTableBuilder
         exam_period_cell = worksheet.add_cell(month_day_row,0,"試験期間")
         month_day_row = month_day_row + 1
         exam_period_cell.change_font_size(12)
-        exam_period_cell.change_font_color("FF0000") 
+        exam_period_cell.change_font_color("FF0066") 
         change_alignment(exam_period_cell) 
       end
       
@@ -128,7 +128,7 @@ class LectureRoomManagementTableBuilder
       elsif day_of_the_week == :sat
         day_of_the_week_cell = worksheet.add_cell(day_of_the_week_row,0,"土曜日")      
         change_alignment(day_of_the_week_cell)             
-        day_of_the_week_cell.change_font_color("0000FF")       
+        day_of_the_week_cell.change_font_color("00B0F0")       
         row_height = 18.8
       else
         day_of_the_week_cell = worksheet.add_cell(day_of_the_week_row,0,"日曜日")      
@@ -258,11 +258,6 @@ class LectureRoomManagementTableBuilder
     cell = worksheet.add_cell(3,10,"16:30~17:20")
     apply_thin_border(cell)
     change_alignment(cell)  
-    #if worksheet.merged_cells.nil?
-    #  worksheet.merged_cells = RubyXL::MergedCells.new
-    #end
-
-    #worksheet.merged_cells.merge_cell << RubyXL::MergedCell.new(ref: 'B1:K1')
   end
 
   def apply_thin_border(cell)
