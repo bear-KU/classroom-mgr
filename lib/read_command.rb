@@ -61,8 +61,6 @@ class ReadCommand < Command
       return CommandResult.new(false, false, ErrorHandler::ERROR_ACADEMIC_CALENDAR_PARSE_FAILED)
     end
 
-    @academic_calendar_information_repository.replace_all(academic_calendar_informations)
-
     #######################################
     # 時間割情報の取得
     #######################################
@@ -78,8 +76,6 @@ class ReadCommand < Command
     if timetable_informations.empty?
       return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_PARSE_FAILED)
     end
-
-    @timetable_information_repository.replace_all(timetable_informations)
 
     #######################################
     # 予約情報の取得
@@ -97,6 +93,11 @@ class ReadCommand < Command
       return CommandResult.new(false, false, ErrorHandler::ERROR_RESERVATION_PARSE_FAILED)
     end
 
+    ########################################
+    # repository への保存
+    ########################################
+    @academic_calendar_information_repository.replace_all(academic_calendar_informations)
+    @timetable_information_repository.replace_all(timetable_informations)
     @reservation_information_repository.replace_all(reservation_informations)
 
     ########################################
