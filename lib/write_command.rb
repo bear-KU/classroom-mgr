@@ -1,5 +1,10 @@
+require_relative 'academic_calendar_information_repository'
+require_relative 'command_result'
+require_relative 'excel_data_exporter'
 require_relative 'lecture_room_management_table_builder'
 require_relative 'lecture_room_management_table_populator'
+require_relative 'lecture_room_management_information_repository'
+require_relative 'managed_lecture_room_information_repository'
 
 class WriteCommand
     def initialize(lecture_room_management_information_repository,academic_calendar_information_repository,managed_lecture_room_information_repository,excel_data_exporter,file_name)
@@ -35,12 +40,6 @@ class WriteCommand
     end
 
     def execute
-      lecture_room_management_information_list = @lecture_room_management_information_repository.find_all
-
-      if lecture_room_management_information_list.size == 0
-        return CommandResult.new(false,false,16)
-      end
-
       academic_calendar_information_list = @academic_calendar_information_repository.find_all
       
       if academic_calendar_information_list.size == 0
@@ -63,6 +62,15 @@ class WriteCommand
 
       managed_lecture_room_information_list = @managed_lecture_room_information_repository.find_all
 
+      lecture_room_management_information_list = select_managed_lecture_room_management_informations(
+        @lecture_room_management_information_repository.find_all,
+        managed_lecture_room_information_list
+      )
+
+      if lecture_room_management_information_list.size == 0
+        return CommandResult.new(false,false,16)
+      end
+
       table_builder = LectureRoomManagementTableBuilder.new
 
       builder_result = table_builder.build(academic_calendar_information_list,managed_lecture_room_information_list)
@@ -77,4 +85,23 @@ class WriteCommand
       puts "出力先： output/#{@file_name}.xlsx"
       return CommandResult.new(false,true,0)
     end
-  end
+  
+    private
+
+    def select_managed_lecture_room_management_informations(
+      lecture_room_management_information_list,
+      managed_lecture_room_information_list
+    )
+      managed_room_names = managed_lecture_room_information_list.map do |information|
+        normalize_room_name(information.room_name)
+      end
+
+      lecture_room_management_information_list.select do |information|
+        managed_room_names.include?(normalize_room_name(information.room_name))
+      end
+    end
+
+    def normalize_room_name(room_name)
+      room_name.unicode_normalize(:nfkc)
+    end
+end
