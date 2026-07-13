@@ -1,14 +1,14 @@
-require_relative "input_parser"
-require_relative "parsed_input"
-require_relative "command_factory"
-require_relative "error_handler"
-require_relative "managed_lecture_room_information_repository"
-require_relative "academic_calendar_information_repository"
-require_relative "timetable_information_repository"
-require_relative "reservation_information_repository"
-require_relative "lecture_room_management_information_repository"
-require_relative "interactive_menu"
-require_relative "excel_data_exporter"
+require_relative 'input_parser'
+require_relative 'parsed_input'
+require_relative 'command_factory'
+require_relative 'error_handler'
+require_relative 'managed_lecture_room_information_repository'
+require_relative 'academic_calendar_information_repository'
+require_relative 'timetable_information_repository'
+require_relative 'reservation_information_repository'
+require_relative 'lecture_room_management_information_repository'
+require_relative 'interactive_menu'
+require_relative 'excel_data_exporter'
 
 class Application
     # 初期化メソッド
@@ -37,6 +37,7 @@ class Application
             input = wait_input
             parsed_input = InputParser.parse(input)
 
+            # エラー番号が返却された場合はエラー画面を表示して次のループへ
             if parsed_input.is_a?(Integer)
                 ErrorHandler.print_error(parsed_input)
                 next
@@ -63,9 +64,15 @@ class Application
     def wait_input
         print "> "
 
-        $stdin.set_encoding(Encoding::UTF_8)
         input = $stdin.gets
         return nil if input.nil?
+
+        # 入力文字列のエンコーディングをUTF-8に変換
+        input = input.dup.force_encoding("UTF-8") 
+        unless input.valid_encoding?
+            # 入力文字列のエンコーディングが不正な場合，システムに従って変換
+            input = input.force_encoding(Encoding.find("locale")).encode(Encoding::UTF_8)
+        end
 
         input.chomp # 改行コードを削除
     end
