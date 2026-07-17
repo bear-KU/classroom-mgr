@@ -52,6 +52,10 @@ class ReadCommand < Command
       academic_calendar_workbook = ExcelDataLoader.load_academic_calendar_xlsx_file(@directory_path)
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_ACADEMIC_CALENDAR_PARSE_FAILED)
+    rescue Errno::ENOENT
+      return CommandResult.new(false, false, ErrorHandler::ERROR_ACADEMIC_CALENDAR_FILE_NOT_FOUND)
+    rescue Errno::EACCES, Errno::EPERM
+      return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
     end
 
     if academic_calendar_workbook.nil?
@@ -72,6 +76,10 @@ class ReadCommand < Command
     timetable_workbook = ExcelDataLoader.load_timetable_xlsx_file(@directory_path)
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_PARSE_FAILED)
+    rescue Errno::ENOENT
+      return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_FILE_NOT_FOUND)
+    rescue Errno::EACCES, Errno::EPERM
+      return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
     end
 
     if timetable_workbook.nil?
@@ -92,6 +100,10 @@ class ReadCommand < Command
       reservation_workbook = ExcelDataLoader.load_reservation_xlsx_file(@directory_path)
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_RESERVATION_PARSE_FAILED)
+    rescue Errno::ENOENT
+      return CommandResult.new(false, false, ErrorHandler::ERROR_RESERVATION_FILE_NOT_FOUND)
+    rescue Errno::EACCES, Errno::EPERM
+      return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
     end
 
     if reservation_workbook.nil?

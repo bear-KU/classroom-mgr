@@ -37,6 +37,10 @@ class SelectCommand < Command
       workbook = ExcelDataLoader.load_managed_lecture_room_xlsx_file
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_MANAGED_LECTURE_ROOM_PARSE_FAILED)
+    rescue Errno::ENOENT
+      return CommandResult.new(false, false, ErrorHandler::ERROR_MANAGED_LECTURE_ROOM_FILE_NOT_FOUND)
+    rescue Errno::EACCES, Errno::EPERM
+      return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
     end
 
     if workbook.nil?

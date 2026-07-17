@@ -82,7 +82,11 @@ class WriteCommand
 
       lecture_room_management_workbook = table_populator.populate_entries(lecture_room_management_information_list)
 
-      @excel_data_exporter.export(lecture_room_management_workbook,file_name)
+      begin
+        @excel_data_exporter.export(lecture_room_management_workbook,file_name)
+      rescue Errno::EACCES, Errno::EPERM
+        return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
+      end
 
       puts "講義室管理一覧表の作成が完了しました．"
       puts "出力先： output/#{@file_name}.xlsx"
