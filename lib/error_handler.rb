@@ -26,6 +26,12 @@ class ErrorHandler
   ERROR_RESERVATION_DATE_NOT_FOUND_IN_ACADEMIC_CALENDAR = 23
   ERROR_INVALID_FILENAME_CHARACTER = 24
   ERROR_FILENAME_TOO_LONG = 25
+  ERROR_INVALID_ARGUMENT_MESSAGE = 26
+  ERROR_MULTIPLE_ACADEMIC_CALENDAR_FILES_MESSAGE = 27
+  ERROR_MULTIPLE_RESERVATION_FILES_MESSAGE = 28
+  ERROR_MULTIPLE_TIMETABLE_FILES_MESSAGE = 29
+  ERROR_MULTIPLE_MANAGED_LECTURE_ROOM_FILES_MESSAGE = 30
+  ERROR_OUTPUT_FILE_NOT_SPECIFIED_MESSAGE = 31
 
   # コマンド処理が返すエラー番号と，画面に表示するエラーメッセージを対応づける。
   NUMBER_TO_ERROR_SENTENCE = {
@@ -54,6 +60,12 @@ class ErrorHandler
     ERROR_RESERVATION_DATE_NOT_FOUND_IN_ACADEMIC_CALENDAR => "エラー：予約データの日付に対応する学年暦データが見つかりません．\n予約データと学年暦データの日付を確認してください．",
     ERROR_INVALID_FILENAME_CHARACTER => "エラー：講義室一覧表のファイル名に不正な文字が含まれています．",
     ERROR_FILENAME_TOO_LONG => "エラー：講義室管理一覧表のファイル名が上限文字数(256文字)を超えています．"
+    ERROR_INVALID_ARGUMENT_MESSAGE => "エラー：無効な引数です．\nマニュアルを参照し．有効な引数を入力してください．"
+    ERROR_MULTIPLE_ACADEMIC_CALENDAR_FILES_MESSAGE => "エラー：学年暦データが2つ以上あります．\n「2026/学年暦/ 」ディレクトリには，学年暦データを1つだけ配置してください．"
+    ERROR_MULTIPLE_RESERVATION_FILES_MESSAGE => "エラー：予約データが2つ以上あります．\n「2026/予約/ 」ディレクトリには，予約データを1つだけ配置してください．"
+    ERROR_MULTIPLE_TIMETABLE_FILES_MESSAGE => "エラー：時間割データが2つ以上あります．\n「2026/時間割/ 」ディレクトリには，時間割データを1つだけ配置してください．"
+    ERROR_MULTIPLE_MANAGED_LECTURE_ROOM_FILES_MESSAGE =>"エラー：管理対象講義室データが2つ以上あります．\n「data/管理対象講義室/ 」ディレクトリには，管理対象講義室データを1つだけ配置してください．"
+    ERROR_OUTPUT_FILE_NOT_SPECIFIED_MESSAGE => "エラー：講義室管理一覧表のファイル名を指定してください．"
   }.freeze
 
   def self.print_error(error_number)
