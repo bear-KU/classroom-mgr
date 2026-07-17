@@ -93,7 +93,7 @@ class InputParser
         end
 
         # トークンの分類と個数確認後，値付きオプションと位置引数の実値を検証
-        # 引用符の有無にかかわらず，空文字または空白文字だけの値は無効
+        # 半角スペースだけの値は許容し，空文字やタブ・改行だけの値は無効とする
         if options.values.any? { |value| blank_value?(value) }
             return ErrorHandler::ERROR_UNKNOWN_OPTION
         end
@@ -159,10 +159,11 @@ class InputParser
         end
     end
 
-    # nil，空文字，空白文字だけで構成された値かを判定
+    # nil，空文字，またはタブや改行などだけで構成された値かを判定
     def self.blank_value?(value)
-        value.nil?
-        # value.nil? || value.strip.empty?
+        return true if value.nil? || value.empty?
+
+        value.match?(/\A[ \t\r\n\v\f]*[\t\r\n\v\f][ \t\r\n\v\f]*\z/)
     end
 
     # オプション引数を登録するメソッド
