@@ -1,8 +1,10 @@
 require 'fileutils'
 require 'rubyXL'
+require_relative 'excel_data_loader' # ApplicationPathクラスを利用するため
 
 class ExcelDataExporter
-  OUTPUT_DIRECTORY = File.expand_path('../output', __dir__)
+  # ApplicationPathと同じ，アプリケーションルート直下のoutputを公開する。
+  OUTPUT_DIRECTORY = ApplicationPath::OUTPUT_DIRECTORY
 
   def initialize
   end
@@ -16,8 +18,7 @@ class ExcelDataExporter
       raise TypeError, 'file_name must be a String.'
     end
 
-    FileUtils.mkdir_p(OUTPUT_DIRECTORY)
-
-    workbook.write(File.join(OUTPUT_DIRECTORY, "#{file_name}.xlsx"))
+    # ファイル名を検証し，必要ならoutputを作成したうえで固定の出力先へ書き込む。
+    workbook.write(ApplicationPath.output_file_path(file_name, create_directory: true))
   end
 end

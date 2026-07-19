@@ -27,6 +27,9 @@ class ErrorHandler
   ERROR_INVALID_FILENAME_CHARACTER = 24
   ERROR_FILENAME_TOO_LONG = 25
 
+  ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY = 33
+  ERROR_MULTIPLE_EXCEL_FILES = 34
+
   # コマンド処理が返すエラー番号と，画面に表示するエラーメッセージを対応づける。
   NUMBER_TO_ERROR_SENTENCE = {
     ERROR_UNKNOWN_COMMAND => "エラー: 無効なコマンドです．\nマニュアルを参照し．有効なコマンドを入力してください．",
@@ -53,7 +56,9 @@ class ErrorHandler
     ERROR_INVALID_DATE_FORMAT => "エラー：日付の形式が正しくありません．\n有効な日付を入力してください．",
     ERROR_RESERVATION_DATE_NOT_FOUND_IN_ACADEMIC_CALENDAR => "エラー：予約データの日付に対応する学年暦データが見つかりません．\n予約データと学年暦データの日付を確認してください．",
     ERROR_INVALID_FILENAME_CHARACTER => "エラー：講義室一覧表のファイル名に不正な文字が含まれています．",
-    ERROR_FILENAME_TOO_LONG => "エラー：講義室管理一覧表のファイル名が上限文字数(256文字)を超えています．"
+    ERROR_FILENAME_TOO_LONG => "エラー：講義室管理一覧表のファイル名が上限文字数(256文字)を超えています．",
+    ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY => "エラー：指定されたパスは，許可されたディレクトリの範囲外です．",
+    ERROR_MULTIPLE_EXCEL_FILES => "エラー：対象ディレクトリに複数のファイルが存在します．\nファイルを1つだけ配置してください．"
   }.freeze
 
   def self.print_error(error_number)
