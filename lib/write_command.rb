@@ -91,7 +91,7 @@ class WriteCommand
         @excel_data_exporter.export(lecture_room_management_workbook,file_name)
       rescue ApplicationPath::InvalidPathError
         return CommandResult.new(false, false, ErrorHandler::ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY)
-      rescue Errno::EACCES, Errno::EPERM
+      rescue Errno::EACCES, Errno::EPERM, Errno::EROFS
         return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
       end
 

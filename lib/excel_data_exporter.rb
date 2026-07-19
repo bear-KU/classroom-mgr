@@ -18,19 +18,26 @@ class ExcelDataExporter
       raise TypeError, 'file_name must be a String.'
     end
 
-    FileUtils.mkdir_p(OUTPUT_DIRECTORY)
-
-    output_file_path = File.join(OUTPUT_DIRECTORY, "#{file_name}.xlsx")
+    # 出力先を検証してから，同じパスをロックと書き込みの両方に使用する。
+    output_file_path = ApplicationPath.output_file_path(file_name, create_directory: true)
 
     with_exclusive_lock(output_file_path) do
-      workbook.write(ApplicationPath.output_file_path(file_name, create_directory: true))
+      workbook.write(output_file_path)
     end
   end
 
   private
 
   def with_exclusive_lock(file_path)
-    File.open("#{file_path}.lock", 'a+b') do |lock_file|
+    lock_file_path = "#{file_path}.lock"
+    if File.symlink?(lock_file_path)
+      raise ApplicationPath::InvalidPathError, 'lock file must not be a symbolic link.'
+    end
+
+    lock_open_flags = File::RDWR | File::CREAT
+    lock_open_flags |= File::NOFOLLOW if File.const_defined?(:NOFOLLOW)
+
+    File.open(lock_file_path, lock_open_flags, 0o600) do |lock_file|
       lock_file.flock(File::LOCK_EX)
 
       begin
@@ -39,5 +46,7 @@ class ExcelDataExporter
         lock_file.flock(File::LOCK_UN)
       end
     end
+  rescue Errno::ELOOP
+    raise ApplicationPath::InvalidPathError, 'lock file must not be a symbolic link.'
   end
 end

@@ -20,4 +20,33 @@ class ReadCommandTest < Minitest::Test
   ensure
     ExcelDataLoader.define_singleton_method(:load_academic_calendar_xlsx_file, &original_loader)
   end
+
+  def test_returns_permission_error_when_read_directory_raises_eacces
+    ApplicationPath.stub(:read_directory, ->(_directory_path) { raise Errno::EACCES }) do
+      result = build_command.execute
+
+      assert_equal false, result.is_succeed
+      assert_equal ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED, result.error_number
+    end
+  end
+
+  def test_returns_permission_error_when_read_directory_raises_eperm
+    ApplicationPath.stub(:read_directory, ->(_directory_path) { raise Errno::EPERM }) do
+      result = build_command.execute
+
+      assert_equal false, result.is_succeed
+      assert_equal ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED, result.error_number
+    end
+  end
+
+  private
+
+  def build_command
+    ReadCommand.new(
+      AcademicCalendarInformationRepository.new,
+      TimetableInformationRepository.new,
+      ReservationInformationRepository.new,
+      'test_data'
+    )
+  end
 end

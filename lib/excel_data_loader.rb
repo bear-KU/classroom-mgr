@@ -107,7 +107,9 @@ class ApplicationPath
       real_candidate = File.realpath(candidate)
       ensure_direct_child!(real_candidate, real_parent)
       real_candidate
-    rescue Errno::ENOENT, Errno::EACCES, Errno::ELOOP
+    rescue Errno::EACCES, Errno::EPERM
+      raise
+    rescue Errno::ENOENT, Errno::ELOOP
       raise InvalidPathError, 'input path cannot be resolved safely.'
     end
 
@@ -125,6 +127,8 @@ class ApplicationPath
       raise InvalidPathError, 'output file must not be a symbolic link.' if File.symlink?(candidate)
 
       candidate
+    rescue Errno::EACCES, Errno::EPERM, Errno::EROFS
+      raise
     rescue SystemCallError
       raise InvalidPathError, 'output directory cannot be prepared safely.'
     end
@@ -157,7 +161,9 @@ class ApplicationPath
       real_base = File.realpath(expanded_base)
       ensure_direct_child!(real_base, real_root)
       real_base
-    rescue Errno::ENOENT, Errno::EACCES, Errno::ELOOP
+    rescue Errno::EACCES, Errno::EPERM
+      raise
+    rescue Errno::ENOENT, Errno::ELOOP
       raise InvalidPathError, 'allowed directory cannot be resolved safely.'
     end
 
@@ -166,7 +172,9 @@ class ApplicationPath
       return unless File.exist?(candidate) || File.symlink?(candidate)
 
       ensure_direct_child!(File.realpath(candidate), File.realpath(base_directory))
-    rescue Errno::ENOENT, Errno::EACCES, Errno::ELOOP
+    rescue Errno::EACCES, Errno::EPERM
+      raise
+    rescue Errno::ENOENT, Errno::ELOOP
       raise InvalidPathError, 'path cannot be resolved safely.'
     end
 

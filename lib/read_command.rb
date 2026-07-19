@@ -48,6 +48,8 @@ class ReadCommand < Command
     # 利用者入力をアプリケーションルートのdata直下へ安全に解決する。
     begin
       directory_path = ApplicationPath.read_directory(@directory_path)
+    rescue Errno::EACCES, Errno::EPERM
+      return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
     rescue ApplicationPath::InvalidPathError
       return CommandResult.new(false, false, ErrorHandler::ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY)
     end
