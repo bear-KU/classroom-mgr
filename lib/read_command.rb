@@ -45,17 +45,28 @@ class ReadCommand < Command
       return CommandResult.new(false, false, ErrorHandler::ERROR_DIRECTORY_NOT_SPECIFIED)
     end
 
+    # 利用者入力をアプリケーションルートのdata直下へ安全に解決する。
+    begin
+      directory_path = ApplicationPath.read_directory(@directory_path)
+    rescue ApplicationPath::InvalidPathError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY)
+    end
+
     #######################################
     # 学年暦情報の取得                    
     #######################################    
     begin
-      academic_calendar_workbook = ExcelDataLoader.load_academic_calendar_xlsx_file(@directory_path)
+      academic_calendar_workbook = ExcelDataLoader.load_academic_calendar_xlsx_file(directory_path)
+    rescue ExcelDataLoader::MultipleExcelFilesError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_MULTIPLE_EXCEL_FILES)
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_ACADEMIC_CALENDAR_PARSE_FAILED)
     rescue Errno::ENOENT
       return CommandResult.new(false, false, ErrorHandler::ERROR_ACADEMIC_CALENDAR_FILE_NOT_FOUND)
     rescue Errno::EACCES, Errno::EPERM
       return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
+    rescue ApplicationPath::InvalidPathError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY)
     end
 
     if academic_calendar_workbook.nil?
@@ -73,13 +84,17 @@ class ReadCommand < Command
     # 時間割情報の取得
     #######################################
     begin
-    timetable_workbook = ExcelDataLoader.load_timetable_xlsx_file(@directory_path)
+      timetable_workbook = ExcelDataLoader.load_timetable_xlsx_file(directory_path)
+    rescue ExcelDataLoader::MultipleExcelFilesError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_MULTIPLE_EXCEL_FILES)
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_PARSE_FAILED)
     rescue Errno::ENOENT
       return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_FILE_NOT_FOUND)
     rescue Errno::EACCES, Errno::EPERM
       return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
+    rescue ApplicationPath::InvalidPathError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY)
     end
 
     if timetable_workbook.nil?
@@ -97,13 +112,17 @@ class ReadCommand < Command
     # 予約情報の取得
     #######################################
     begin
-      reservation_workbook = ExcelDataLoader.load_reservation_xlsx_file(@directory_path)
+      reservation_workbook = ExcelDataLoader.load_reservation_xlsx_file(directory_path)
+    rescue ExcelDataLoader::MultipleExcelFilesError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_MULTIPLE_EXCEL_FILES)
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_RESERVATION_PARSE_FAILED)
     rescue Errno::ENOENT
       return CommandResult.new(false, false, ErrorHandler::ERROR_RESERVATION_FILE_NOT_FOUND)
     rescue Errno::EACCES, Errno::EPERM
       return CommandResult.new(false, false, ErrorHandler::ERROR_FILE_OPERATION_PERMISSION_DENIED)
+    rescue ApplicationPath::InvalidPathError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY)
     end
 
     if reservation_workbook.nil?
@@ -127,9 +146,9 @@ class ReadCommand < Command
     ########################################
     # 成功時の処理
     ########################################
-    academic_calendar_filename = File.basename(Dir.glob("data/#{@directory_path}/学年暦/*.xlsx").first.to_s)
-    timetable_filename = File.basename(Dir.glob("data/#{@directory_path}/時間割/*.xlsx").first.to_s)
-    reservation_filename = File.basename(Dir.glob("data/#{@directory_path}/予約/*.xlsx").first.to_s)
+    academic_calendar_filename = File.basename(Dir.glob(File.join(directory_path, '学年暦', '*.xlsx')).first.to_s)
+    timetable_filename = File.basename(Dir.glob(File.join(directory_path, '時間割', '*.xlsx')).first.to_s)
+    reservation_filename = File.basename(Dir.glob(File.join(directory_path, '予約', '*.xlsx')).first.to_s)
 
     message = <<~TEXT
       入力データの読み込みが完了しました．

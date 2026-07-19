@@ -1,8 +1,10 @@
 require 'fileutils'
 require 'rubyXL'
+require_relative 'excel_data_loader' # ApplicationPathクラスを利用するため
 
 class ExcelDataExporter
-  OUTPUT_DIRECTORY = File.expand_path('../output', __dir__)
+  # ApplicationPathと同じ，アプリケーションルート直下のoutputを公開する。
+  OUTPUT_DIRECTORY = ApplicationPath::OUTPUT_DIRECTORY
 
   def initialize
   end
@@ -21,7 +23,7 @@ class ExcelDataExporter
     output_file_path = File.join(OUTPUT_DIRECTORY, "#{file_name}.xlsx")
 
     with_exclusive_lock(output_file_path) do
-      workbook.write(output_file_path)
+      workbook.write(ApplicationPath.output_file_path(file_name, create_directory: true))
     end
   end
 
