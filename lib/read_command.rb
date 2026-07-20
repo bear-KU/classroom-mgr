@@ -81,7 +81,7 @@ class ReadCommand < Command
     begin
       academic_calendar_informations = academic_calendar_parser.parse_academic_calendar_worksheet
     rescue ExcelParseError => e
-      warn e.message
+      # warn e.message
       return CommandResult.new(false, false, ErrorHandler::ERROR_ACADEMIC_CALENDAR_PARSE_FAILED)
     end
 
@@ -111,7 +111,13 @@ class ReadCommand < Command
     end
 
     timetable_parser = TimetableParser.new(timetable_workbook[0])
-    timetable_informations = timetable_parser.parse_timetable_worksheet
+
+    begin
+      timetable_informations = timetable_parser.parse_timetable_worksheet
+    rescue ExcelParseError => e
+      warn e.message
+      return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_PARSE_FAILED)
+    end
 
     if timetable_informations.empty?
       return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_PARSE_FAILED)
