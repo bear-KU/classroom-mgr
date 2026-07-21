@@ -71,7 +71,7 @@ class TimetableParser
     s_period = validate_integer!(target_row, 's_period', 1..8, S_PERIOD)
     e_period = validate_integer!(target_row, 'e_period', 1..8, E_PERIOD)
 
-    # s_period が e_period が大きい (逆転チェック)
+    # s_period が e_period より大きい (逆転チェック)
     if s_period > e_period
       row_info = target_row[S_PERIOD]&.row
       raise ExcelParseError.new(
@@ -186,7 +186,7 @@ class TimetableParser
   end
   private :validate_week!
 
-  # ------------------------------------------
+  ############################################
 
   def generate_period_symbols(start_period, end_period)
     unless start_period.is_a?(Integer)
