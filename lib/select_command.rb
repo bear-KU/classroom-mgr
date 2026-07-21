@@ -35,6 +35,8 @@ class SelectCommand < Command
   def execute
     begin
       workbook = ExcelDataLoader.load_managed_lecture_room_xlsx_file
+    rescue ExcelDataLoader::MultipleExcelFilesError
+      return CommandResult.new(false, false, ErrorHandler::ERROR_MANAGED_LECTURE_ROOM_PARSE_FAILED)
     rescue ExcelDataLoader::InvalidExcelFileError
       return CommandResult.new(false, false, ErrorHandler::ERROR_MANAGED_LECTURE_ROOM_PARSE_FAILED)
     rescue Errno::ENOENT
@@ -44,18 +46,10 @@ class SelectCommand < Command
     end
 
     if workbook.nil?
-      xlsx_files = Dir.glob(File.join("data", "管理対象講義室", "*.xlsx"))
-      error_number =
-        if xlsx_files.length > 1
-          ErrorHandler::ERROR_MANAGED_LECTURE_ROOM_PARSE_FAILED
-        else
-          ErrorHandler::ERROR_MANAGED_LECTURE_ROOM_FILE_NOT_FOUND
-        end
-
       return CommandResult.new(
         false,
         false,
-        error_number
+        ErrorHandler::ERROR_MANAGED_LECTURE_ROOM_FILE_NOT_FOUND
       )
     end
 
@@ -64,8 +58,11 @@ class SelectCommand < Command
     managed_lecture_room_informations = parser.parse_managed_lecture_room_worksheet
     room_names = managed_lecture_room_informations.map(&:room_name)
     has_duplicate_room_name = room_names.uniq.length != room_names.length
+    has_invalid_room_name = room_names.any? do |room_name|
+      room_name.unicode_normalize(:nfkc).strip.empty? || room_name.length > 64
+    end
 
-    if managed_lecture_room_informations.empty? || has_duplicate_room_name
+    if managed_lecture_room_informations.empty? || has_duplicate_room_name || has_invalid_room_name
       return CommandResult.new(
         false,
         false,
@@ -97,10 +94,14 @@ class SelectCommand < Command
     @managed_lecture_room_information_repository.replace_all(
       managed_lecture_room_informations
     )
+    had_lecture_room_management_informations =
+      !@lecture_room_management_information_repository.find_all.empty?
     @lecture_room_management_information_repository.replace_all([])
 
     puts "管理対象講義室の設定が完了しました．"
-    puts "管理対象講義室の変更に伴い，講義室管理情報をリセットしました．"
+    if had_lecture_room_management_informations
+      puts "管理対象講義室の変更に伴い，講義室管理情報をリセットしました．"
+    end
     CommandResult.new(false, true, SUCCESS)
   end
 end
