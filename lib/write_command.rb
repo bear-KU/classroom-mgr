@@ -8,6 +8,8 @@ require_relative 'lecture_room_management_table_populator'
 require_relative 'lecture_room_management_information_repository'
 require_relative 'managed_lecture_room_information_repository'
 
+
+
 class WriteCommand
     def initialize(lecture_room_management_information_repository,academic_calendar_information_repository,managed_lecture_room_information_repository,excel_data_exporter,file_name)
       unless lecture_room_management_information_repository.is_a?(LectureRoomManagementInformationRepository)
@@ -48,7 +50,7 @@ class WriteCommand
         return CommandResult.new(false, false, ErrorHandler::ERROR_OUTPUT_FILE_NOT_SPECIFIED)
       end
 
-      if @file_name.length > 256
+      if @file_name.length > 128
         return CommandResult.new(false, false, ErrorHandler::ERROR_FILENAME_TOO_LONG)
       end
 
@@ -63,20 +65,6 @@ class WriteCommand
       
       if academic_calendar_information_list.size == 0
         return CommandResult.new(false,false,ErrorHandler::ERROR_ACADEMIC_CALENDAR_NOT_LOADED)
-      end
-
-      file_name = @file_name
-
-      if file_name.empty?
-        return CommandResult.new(false,false,ErrorHandler::ERROR_OUTPUT_FILE_NOT_SPECIFIED)
-      end
-
-      if file_name.match?(/[\\\/:*?"<>|]/) || file_name.start_with?(".", "．")
-        return CommandResult.new(false,false,ErrorHandler::ERROR_INVALID_FILENAME_CHARACTER)
-      end
-      
-      if file_name.length > 256
-        return CommandResult.new(false,false,ErrorHandler::ERROR_FILENAME_TOO_LONG)
       end
 
       managed_lecture_room_information_list = @managed_lecture_room_information_repository.find_all
@@ -98,9 +86,24 @@ class WriteCommand
 
       lecture_room_management_workbook = table_populator.populate_entries(lecture_room_management_information_list)
 
+      term_check = [0,0,0,0]
+
+      lecture_room_management_information_list.each do |lecture_room_management_information|
+        if lecture_room_management_information.term == 1 || lecture_room_management_information.term == 2 || 
+          lecture_room_management_information.term == 3 || lecture_room_management_information.term == 4
+          term_check[lecture_room_management_information.term - 1] = 1
+        end
+      end
+
+      term_check.each_with_index do |check,index|
+        if check == 0
+          lecture_room_management_workbook.worksheets.delete(lecture_room_management_workbook["#{index+1}学期"])
+        end
+      end
+
       # 出力時にoutputや出力ファイルがリンクへ置換されていた場合もエラーにする。
       begin
-        @excel_data_exporter.export(lecture_room_management_workbook,file_name)
+        @excel_data_exporter.export(lecture_room_management_workbook,@file_name)
       rescue ApplicationPath::InvalidPathError
         return CommandResult.new(false, false, ErrorHandler::ERROR_PATH_OUTSIDE_ALLOWED_DIRECTORY)
       rescue Errno::EACCES, Errno::EPERM, Errno::EROFS
