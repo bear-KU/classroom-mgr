@@ -68,14 +68,14 @@ class WriteCommand
       file_name = @file_name
 
       if file_name.empty?
-        return CommandResult.new(false,false,ErrorHandler::ERROR_OUTPUT_FILE_NOT_SPECIFIED)
+        return CommandResult.new(false,false,ErrorHandler::ERROR_OUTPUT_FILE_NOT_SPECIFIED_MESSAGE)
       end
 
       if file_name.match?(/[\\\/:*?"<>|]/) || file_name.start_with?(".", "．")
         return CommandResult.new(false,false,ErrorHandler::ERROR_INVALID_FILENAME_CHARACTER)
       end
       
-      if file_name.length > 256
+      if file_name.length > 128
         return CommandResult.new(false,false,ErrorHandler::ERROR_FILENAME_TOO_LONG)
       end
 
