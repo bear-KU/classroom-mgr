@@ -41,9 +41,17 @@ class InputParser
             parsed_tokens = split_with_quote_information(input)
         rescue ArgumentError
             # クォーテーションの閉じ忘れなど，入力文字列として解析できない場合
-            return ErrorHandler::ERROR_UNKNOWN_COMMAND # TODO: エラー番号を追加し，変更
+            return ErrorHandler::ERROR_INVALID_ARGUMENT_MESSAGE
         end
-        command_name = parsed_tokens.shift&.value # (4) 先頭要素からコマンド名を取得
+
+        command_token = parsed_tokens.shift
+
+        # コマンドが存在しない、またはクォーテーションを含む場合は無効
+        if command_token.nil? || command_token.quoted
+            return ErrorHandler::ERROR_UNKNOWN_COMMAND
+        end
+
+        command_name = command_token.value
         options = {}
 
         # (4) コマンド名が有効かどうか確認
