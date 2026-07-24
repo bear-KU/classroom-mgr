@@ -108,7 +108,7 @@ class InteractiveConflictResolutionServiceTest < Minitest::Test
 
         output = capture_io { service.execute }.first
 
-        assert_includes output, '講義室： 全講義室'
+        assert_includes output, '講義室： 第1講義室'
         assert_includes output, '科目名・予約名「Seminar」が選択されました．'
         assert_equal ['全講義室'], repository.find_all.map(&:room_name)
     end
@@ -140,7 +140,7 @@ class InteractiveConflictResolutionServiceTest < Minitest::Test
             ]
         )
         menu = FakeInteractiveMenu.new(0)
-        service = InteractiveConflictResolutionService.new(repository, menu, managed_repository)
+        service = InteractiveConflictResolutionService.new(repository, menu, managed_repository(['Room A', 'Room B']))
         conflict = Conflict.new(
             room_name: 'Room A',
             date: Date.new(2024, 6, 1),
@@ -148,7 +148,8 @@ class InteractiveConflictResolutionServiceTest < Minitest::Test
             conflicting_informations: [
                 @information,
                 @conflicting_information,
-                @related_conflicting_information
+                @related_conflicting_information,
+                extra_related_information
             ]
         )
 
@@ -157,6 +158,8 @@ class InteractiveConflictResolutionServiceTest < Minitest::Test
         assert_equal [@information], repository.find_all
         assert_includes output, '日時'
         assert_includes output, '講義室'
+        assert_includes output, '講義室： Room A，Room B'
+        refute_includes output, 'Room C'
         assert_includes output, '科目名・予約名「Mathematics」が選択されました．'
         assert_equal '候補一覧：優先する情報を1つ選択してください．', menu.messages.first
         assert_match(/\A科目名・予約名\s+担当者・予約者\s+備考\s*\z/, menu.headers.first)

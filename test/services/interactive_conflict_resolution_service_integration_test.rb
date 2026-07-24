@@ -255,6 +255,51 @@ class InteractiveConflictResolutionServiceIntegrationTest < Minitest::Test
         assert_includes output, '2件の競合を解消しました．'
     end
 
+    def test_execute_counts_identical_choices_as_one_conflict_for_progress_display
+        mathematics_first_entry = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1],
+            subject: 'Mathematics',
+            user: 'John Doe',
+            comment: 'First entry'
+        )
+        mathematics_second_entry = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1],
+            subject: 'Mathematics',
+            user: 'John Doe',
+            comment: 'Second entry'
+        )
+        physics = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1],
+            subject: 'Physics',
+            user: 'Jane Doe',
+            comment: 'Conflicting entry'
+        )
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [
+                mathematics_first_entry,
+                mathematics_second_entry,
+                physics
+            ]
+        )
+        menu = IntegrationFakeInteractiveMenu.new([0])
+        service = InteractiveConflictResolutionService.new(
+            repository,
+            menu,
+            managed_repository(['Room 303'])
+        )
+
+        output = capture_io { service.execute }.first
+
+        assert_equal [mathematics_first_entry, mathematics_second_entry], repository.find_all
+        assert_equal 1, menu.options.length
+        assert_includes output, '講義室の利用に1件の競合が見つかりました．'
+        assert_includes output, '--- 競合 1/1 ---'
+        assert_includes output, '1件の競合を解消しました．'
+    end
+
     def test_execute_removes_related_conflict_when_selected_subject_deletes_shared_conflicting_information
         reservation_a = lecture_room_management_information(
             room_name: 'Room 303',
@@ -300,6 +345,68 @@ class InteractiveConflictResolutionServiceIntegrationTest < Minitest::Test
         refute_includes output, '--- 競合 2/2 ---'
         assert_includes output, '科目名・予約名「Reservation A」が選択されました．'
         assert_includes output, '2件の競合を解消しました．'
+    end
+
+    def test_execute_skips_progress_numbers_for_conflicts_resolved_by_previous_choice
+        all_day_reservation = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1, :p2],
+            subject: 'All-day reservation',
+            user: 'Alice',
+            comment: 'Shared reservation'
+        )
+        first_class = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1],
+            subject: 'First class',
+            user: 'Bob',
+            comment: 'First period'
+        )
+        second_class = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p2],
+            subject: 'Second class',
+            user: 'Carol',
+            comment: 'Second period'
+        )
+        later_class = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1],
+            subject: 'Later class',
+            user: 'Dave',
+            comment: 'Later date',
+            date: Date.new(2024, 6, 2)
+        )
+        later_reservation = lecture_room_management_information(
+            room_name: 'Room 303',
+            periods: [:p1],
+            subject: 'Later reservation',
+            user: 'Eve',
+            comment: 'Later date',
+            date: Date.new(2024, 6, 2)
+        )
+        repository = LectureRoomManagementInformationRepository.new(
+            lecture_room_management_informations: [
+                all_day_reservation,
+                first_class,
+                second_class,
+                later_class,
+                later_reservation
+            ]
+        )
+        menu = IntegrationFakeInteractiveMenu.new([1, 0])
+        service = InteractiveConflictResolutionService.new(
+            repository,
+            menu,
+            managed_repository(['Room 303'])
+        )
+
+        output = capture_io { service.execute }.first
+
+        assert_includes output, '講義室の利用に3件の競合が見つかりました．'
+        assert_includes output, '--- 競合 1/3 ---'
+        assert_includes output, '--- 競合 3/3 ---'
+        refute_includes output, '--- 競合 2/3 ---'
     end
 
     private
