@@ -30,29 +30,31 @@ class InteractiveConflictResolutionService
     end
 
     def execute
-        resolved_conflict_count = 0
         managed_lecture_room_information_list = managed_lecture_room_informations
         lecture_room_management_informations = @lecture_room_management_information_repository.find_all
         conflicts = ConflictDetector.detect_conflicts(
             lecture_room_management_informations,
             managed_lecture_room_informations: managed_lecture_room_information_list
         )
-        initial_conflict_count = conflicts.length
+        # A single choice applies to every use of the selected subject on that
+        # date.  Several raw conflicts can therefore present exactly the same
+        # choice to the user; count those as one for progress display.
+        estimated_conflict_count = decision_conflict_count(conflicts)
 
-        if initial_conflict_count.positive?
-            puts "講義室の利用に#{initial_conflict_count}件の競合が見つかりました．"
+        if estimated_conflict_count.positive?
+            puts "講義室の利用に#{estimated_conflict_count}件の競合が見つかりました．"
             puts '各競合について．優先する講義室利用情報を選択してください．'
         end
 
         loop do
             break if conflicts.empty?
 
+            remaining_conflict_count = decision_conflict_count(conflicts)
             resolve_conflict(
                 conflicts.first,
-                conflict_index: resolved_conflict_count + 1,
-                conflict_count: initial_conflict_count
+                conflict_index: estimated_conflict_count - remaining_conflict_count + 1,
+                conflict_count: estimated_conflict_count
             )
-            resolved_conflict_count += 1
 
             lecture_room_management_informations = @lecture_room_management_information_repository.find_all
             conflicts = ConflictDetector.detect_conflicts(
@@ -62,7 +64,7 @@ class InteractiveConflictResolutionService
         end
 
 
-        puts "#{initial_conflict_count}件の競合を解消しました．" if initial_conflict_count.positive?
+        puts "#{estimated_conflict_count}件の競合を解消しました．" if estimated_conflict_count.positive?
     end
 
     def resolve_conflict(conflict, conflict_index: nil, conflict_count: nil)
@@ -97,7 +99,7 @@ class InteractiveConflictResolutionService
     def print_conflict(conflict, conflict_index, conflict_count)
         puts "--- 競合 #{conflict_index}/#{conflict_count} ---" if conflict_index && conflict_count
         puts "日時　： #{date_label_for(conflict.date)}　#{period_label_for(conflict.period)}"
-        puts "講義室： #{conflict.room_name}"
+        puts "講義室： #{room_names_for(conflict).join('，')}"
         puts
     end
 
@@ -143,6 +145,28 @@ class InteractiveConflictResolutionService
 
             @lecture_room_management_information_repository.remove(stored_information)
         end
+    end
+
+    def decision_conflict_count(conflicts)
+        conflicts.uniq { |conflict| decision_key_for(conflict) }.length
+    end
+
+    def decision_key_for(conflict)
+        subjects = conflict.conflicting_informations.map(&:subject).uniq.sort
+        [conflict.date, subjects]
+    end
+
+    def room_names_for(conflict)
+        managed_room_names = @managed_lecture_room_information_repository.find_all.map do |information|
+            LectureRoomManagementInformation.normalize_room_name(information.room_name)
+        end
+        selected_room_names = conflict.conflicting_informations.filter_map do |information|
+            information.room_name if managed_room_names.include?(
+                LectureRoomManagementInformation.normalize_room_name(information.room_name)
+            )
+        end.uniq
+
+        selected_room_names.empty? ? [conflict.room_name] : selected_room_names
     end
 
     def validate_selected_index(selected_index, option_count)
