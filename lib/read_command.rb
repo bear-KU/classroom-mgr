@@ -81,7 +81,7 @@ class ReadCommand < Command
     begin
       academic_calendar_informations = academic_calendar_parser.parse_academic_calendar_worksheet
     rescue ExcelParseError => e
-      warn e.message
+      # warn e.message
       return CommandResult.new(false, false, ErrorHandler::ERROR_ACADEMIC_CALENDAR_PARSE_FAILED)
     end
 
@@ -115,7 +115,7 @@ class ReadCommand < Command
     begin
       timetable_informations = timetable_parser.parse_timetable_worksheet
     rescue ExcelParseError => e
-      warn e.message
+      # warn e.message
       return CommandResult.new(false, false, ErrorHandler::ERROR_TIMETABLE_PARSE_FAILED)
     end
 
@@ -149,7 +149,7 @@ class ReadCommand < Command
     begin
       reservation_informations = reservation_parser.parse_reservation_worksheet
     rescue ExcelParseError => e
-      warn e.message
+      # warn e.message
       return CommandResult.new(false, false, ErrorHandler::ERROR_RESERVATION_PARSE_FAILED)
     end
 
