@@ -1,0 +1,5 @@
+.gitignore export-ignore
+.gitattributes export-ignore
+data/.keep export-ignore
+data/管理対象講義室/.keep export-ignore
+test export-ignore
